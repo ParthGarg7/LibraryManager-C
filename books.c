@@ -1,7 +1,12 @@
 #include <stdio.h>
+#include <conio.h>
 #include <direct.h>
 
-int BookNum();
+void LoadBookData();
+void AddBook();
+void DisplayBooks();
+void DeleteBook();
+void SaveBookData();
 
 struct Book
 {
@@ -17,27 +22,26 @@ struct library
     int BookNum;
 } Mylibrary;
 
-int BookNum()
+void LoadBookData()
 {
-    int num;
-
-    chdir("C:\\Users\\Garg Family\\3D Objects\\Programming\\Projects\\My C Projects\\Library managment system");
+    // Fetch the current number of books
     FILE *fp1;
 
     fp1 = fopen("book number.txt", "r");
-
-    fscanf(fp1, "%d", &num);
-
+    fscanf(fp1, "%d", &Mylibrary.BookNum);
     fclose(fp1);
 
-    return num;
+    FILE *fp2;
+
+    fp2 = fopen("BooksData.txt", "rb");
+    fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
+    fclose(fp2);
+
+    return;
 }
 
 void AddBook()
 {
-    // Fetch the current number of books
-    Mylibrary.BookNum = BookNum();
-
     struct Book *NewBook = &Mylibrary.books[Mylibrary.BookNum];
 
     NewBook->bookID = Mylibrary.BookNum + 1;
@@ -56,26 +60,83 @@ void AddBook()
 
     // Increment the book count
     Mylibrary.BookNum += 1;
-    printf("Book added successfully! Total Books: %d\n", Mylibrary.BookNum);
-
-    // Save the updated book count to the file
-    FILE *fp1 = fopen("book number.txt", "w");
-    if (fp1 != NULL)
-    {
-        fprintf(fp1, "%d", Mylibrary.BookNum);
-        fclose(fp1);
-    }
-
-    SaveBook();
+    printf("Book added successfully!\n Total Books: %d\n", Mylibrary.BookNum);
 
     return;
 }
 
-void SaveBook()
+void DisplayBooks()
 {
+    system("cls");
+    printf("There are total %d Books in the library\n", Mylibrary.BookNum);
+    printf("Here is a list of currently available books\n");
+    printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
+    for (int i = 0; i < Mylibrary.BookNum; i++)
+        printf("%d\t\t%s\t\t\t%s\t\t\t%d\n", Mylibrary.books[i].bookID, Mylibrary.books[i].bookName, Mylibrary.books[i].bookAuthor, Mylibrary.books[i].bookCopy);
+    getch();
+
+    return;
+}
+
+void DeleteBook()
+{
+    int ID;
+
+    if (Mylibrary.BookNum == 0)
+    {
+        printf("The library is empty.\n");
+        return;
+    }
+
+    printf("There are total %d Books in the library\n", Mylibrary.BookNum);
+    printf("Here is a list of currently available books\n");
+    printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
+    for (int i = 0; i < Mylibrary.BookNum; i++)
+        printf("%d\t\t%s\t\t\t%s\t\t\t%d\n\n", Mylibrary.books[i].bookID, Mylibrary.books[i].bookName, Mylibrary.books[i].bookAuthor, Mylibrary.books[i].bookCopy);
+
+    printf("Enter the ID to delete the Book\n");
+    scanf("%d", &ID);
+    getchar();
+
+    if (ID > Mylibrary.BookNum)
+    {
+        printf("Wrong ID\n");
+        return;
+    }
+    else if (ID == Mylibrary.BookNum)
+    {
+        Mylibrary.BookNum -= 1;
+        printf("Book Deleted successfully! \nTotal Books: %d\n", Mylibrary.BookNum);
+        return;
+    }
+    else
+    {
+        for (int i = ID; i < Mylibrary.BookNum; i++)
+        {
+            Mylibrary.books[i].bookID -= 1;
+            Mylibrary.books[i - 1] = Mylibrary.books[i];
+        }
+
+        Mylibrary.BookNum -= 1;
+        printf("Book Deleted successfully! \nTotal Books: %d\n", Mylibrary.BookNum);
+        return;
+    }
+}
+
+void SaveBookData()
+{
+    // Save the updated book count to the file
+    FILE *fp1;
+
+    fp1 = fopen("book number.txt", "w");
+    fprintf(fp1, "%d", Mylibrary.BookNum);
+    fclose(fp1);
+
     FILE *fp2;
+
     fp2 = fopen("BooksData.txt", "wb");
     fwrite(&Mylibrary, sizeof(struct library), 1, fp2);
     fclose(fp2);
+
     return;
 }
