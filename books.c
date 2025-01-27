@@ -88,7 +88,7 @@ void DeleteBook()
     scanf("%d", &ID);
     getchar();
 
-    if (ID > Mylibrary.BookNum)
+    if (ID >= Mylibrary.BookNum)
     {
         printf("Wrong ID\n");
         return;

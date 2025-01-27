@@ -8,6 +8,7 @@
 void Adminlogin();
 void AdminOperations();
 void DisplayStudents();
+void DeleteStudentData();
 
 long long int LoginID = 7983655087;
 char LoginPass[] = "7983655087";
@@ -48,8 +49,9 @@ void AdminOperations()
         printf("Press 1 for Adding Book\n");
         printf("press 2 for Displaying Books\n");
         printf("Press 3 for Deleting Book\n");
-        printf("Press 4 for Displaying Students\n");
-        printf("Press 5 for Exit\n");
+        printf("Press 4 for Deleting Student Data\n");
+        printf("Press 5 for Displaying Students\n");
+        printf("Press 6 for Exit\n");
         scanf("%d", &choice);
         getchar();
         switch (choice)
@@ -67,11 +69,14 @@ void AdminOperations()
             break;
 
         case 4:
-            DisplayStudents();
+            DeleteStudentData();
             break;
 
         case 5:
+            DisplayStudents();
+            break;
 
+        case 6:
             SaveBookData();
             return;
 
@@ -109,6 +114,55 @@ void DisplayStudents()
         }
 
         printf("----------------------------------------------------------------------------------------------------------------------------------------------\n\n");
+    }
+
+    return;
+}
+
+void DeleteStudentData()
+{
+    int ID, i;
+
+    if (MyStudent.StudentNum == 0)
+    {
+        printf("There is no student.\n");
+        return;
+    }
+
+    printf("There are total %d Students\n", MyStudent.StudentNum);
+    printf("Here is a list of Current Students\n\n\n");
+
+    printf("StudentID\tStudent Name\t\tStudent Course\t\tStudent year\tStudent Roll Number\n");
+    for (int i = 0; i < MyStudent.StudentNum; i++)
+    {
+
+        printf("%-15d %-25s %-25s %-15s %-20lld\n", MyStudent.Student[i].StudentID,
+               MyStudent.Student[i].StudentName, MyStudent.Student[i].StudentCourse,
+               MyStudent.Student[i].StudentYear, MyStudent.Student[i].StudentRollNo);
+
+        printf("\n\n");
+    }
+
+    printf("Enter the Student ID to delete the student data\n");
+    scanf("%d", &ID);
+    getchar();
+
+    if (ID >= MyStudent.StudentNum)
+    {
+        printf("Wrong ID\n");
+        return;
+    }
+    else
+    {
+        for (i = ID; i < MyStudent.StudentNum; i++)
+        {
+            MyStudent.Student[i].StudentID -= 1;
+            MyStudent.Student[i - 1] = MyStudent.Student[i];
+        }
+
+        MyStudent.StudentNum -= 1;
+        printf("Student Data Deleted successfully! \nTotal Students: %d\n", MyStudent.StudentNum);
+        return;
     }
 
     return;
