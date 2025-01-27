@@ -9,11 +9,12 @@ struct StudentUser MyStudent;
 
 void LoadStudentData();
 void StudentLogin();
-void AddStudent(char *, int);
-void DisplayStudents();
-void StudentOperations();
-void BorrowBook();
-void ReturnBook();
+void AddStudent();
+void StudentOperations(int);
+void BorrowBook(int);
+void DisplayBook();
+void DisplayBorrowedBook(int);
+void ReturnBook(int);
 void SaveStudentData();
 
 void LoadStudentData()
@@ -36,145 +37,144 @@ void LoadStudentData()
 
 void StudentLogin()
 {
-    LoadStudentData();
-
+    int RollNo;
     int key = 0;
-    long long int Roll_no;
-    char Name[50];
-    printf("Enter your Name and RollNo\n");
+    char choice;
 
-    printf("Enter Name: ");
-    fgets(Name, sizeof(Name), stdin);
-    Name[strcspn(Name, "\n")] = 0;
-
-    printf("Enter RollNo: ");
-    scanf("%lld", &Roll_no);
+    printf("Welcome to the Student Management System\n\n");
+    printf("Options:\n");
+    printf("  [N] New Student Registration\n");
+    printf("  [L] Login (for already registered students)\n");
+    scanf("%c", &choice);
     getchar();
 
-    for (int i = 0; i < MyStudent.StudentNum; i++)
+    if (choice == 'N' || choice == 'n')
     {
-        if (Roll_no == MyStudent.Student[i].StudentRollNo)
-        {
-            key = 1;
-            break;
-        }
+        AddStudent();
     }
+    else if (choice == 'L' || choice == 'l')
+    {
+        printf("Enter Your RollNo (unique for every student) ");
+        scanf("%d", &RollNo);
+        getchar();
 
-    if (MyStudent.StudentNum == 0)
-    {
-        AddStudent(Name, Roll_no);
-        StudentOperations();
-    }
-    else if (key == 1)
-    {
-        StudentOperations();
+        for (key = 0; key < MyStudent.StudentNum; key++)
+        {
+            if (MyStudent.Student[key].StudentRollNo == RollNo)
+            {
+                StudentOperations(RollNo);
+                break;
+            }
+        }
+        if (key == MyStudent.StudentNum)
+        {
+            printf("Your Roll Number is not registered in the library\n");
+            StudentLogin();
+        }
     }
     else
     {
-        AddStudent(Name, Roll_no);
-        StudentOperations();
+        printf("Wrong Input\n");
+        StudentLogin();
     }
 
     return;
 }
 
-void AddStudent(char *Name, int RollNo)
+void AddStudent()
 {
-    printf("Welcome %s\n", Name);
-    printf("New Student registration\n");
+    printf("New Student registration\n\n");
+
+    int RollNo;
+    printf("Enter Your RollNo (unique for every student) ");
+    scanf("%d", &RollNo);
+    getchar();
+
+    for (int i = 0; i < MyStudent.StudentNum; i++)
+    {
+        if (MyStudent.Student[i].StudentRollNo == RollNo)
+        {
+            printf("Roll Number %d already exist \n");
+            StudentLogin();
+        }
+    }
 
     struct Student *NewStudent = &MyStudent.Student[MyStudent.StudentNum];
 
     NewStudent->StudentID = MyStudent.StudentNum + 1;
 
-    strcpy(NewStudent->StudentName, Name);
+    printf("Enter Your Name: ");
+    fgets(NewStudent->StudentName, sizeof(NewStudent->StudentName), stdin);
+    NewStudent->StudentName[strcspn(NewStudent->StudentName, "\n")] = 0;
 
     printf("Enter Your Course: ");
     fgets(NewStudent->StudentCourse, sizeof(NewStudent->StudentCourse), stdin);
     NewStudent->StudentCourse[strcspn(NewStudent->StudentCourse, "\n")] = 0;
 
-    printf("Enter Your Course Year ");
-    scanf("%d", &NewStudent->StudentYear);
-    getchar();
+    printf("Enter Your Course Year: ");
+    fgets(NewStudent->StudentYear, sizeof(NewStudent->StudentYear), stdin);
+    NewStudent->StudentYear[strcspn(NewStudent->StudentYear, "\n")] = 0;
 
     NewStudent->StudentRollNo = RollNo;
+
+    NewStudent->NoOfBookBorrowed = 0;
 
     // Increment the Student count
     MyStudent.StudentNum += 1;
 
-    printf("%s library registration complete\n\n", Name);
+    printf("%s library registration complete\n\n", NewStudent->StudentName);
+
+    StudentOperations(RollNo);
 
     return;
 }
 
-void DisplayStudents()
+void StudentOperations(int RollNo)
 {
-    printf("There are total %d Students\n", MyStudent.StudentNum);
-    printf("Here is a list of current Students\n");
-
-    printf("StudentID\tStudent Name\t\tStudent Course\t\tStudent year\tStudent Roll Number\n");
-    for (int i = 0; i < MyStudent.StudentNum; i++)
-        printf("%d\t%s\t\t%s\t\t%d\t%d", MyStudent.Student[i].StudentID, MyStudent.Student[i].StudentName, MyStudent.Student[i].StudentCourse, MyStudent.Student[i].StudentYear, MyStudent.Student[i].StudentRollNo);
-
-    // printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
-    // for (int i = 0; i < Mylibrary.BookNum; i++)
-    //     printf("%d\t\t%s\t\t\t%s\t\t\t%d\n", Mylibrary.books[i].bookID, Mylibrary.books[i].bookName, Mylibrary.books[i].bookAuthor, Mylibrary.books[i].bookCopy);
-
-    getch();
-    return;
-}
-
-void StudentOperations()
-{
+    int index;
     int choice;
+
+    for (int i = 0; i < MyStudent.StudentNum; i++)
+    {
+        if (MyStudent.Student[i].StudentRollNo == RollNo)
+            index = i;
+    }
 
     while (1)
     {
+
+        printf("Welcome %s\n", MyStudent.Student[index].StudentName);
         printf("Student Operations\n");
         printf("Press 1 for Borrowing Book\n");
         printf("press 2 for Displaying Books\n");
-        printf("Press 3 for Returning Book\n");
-        printf("Press 4 for Exit\n");
+        printf("Press 3 for checking for borrowed book list\n");
+        printf("Press 4 for Returning Book\n");
+        printf("Press 5 for Exit\n");
         scanf("%d", &choice);
         getchar();
         switch (choice)
         {
         case 1:
-            BorrowBook();
+            BorrowBook(index);
             break;
 
         case 2:
-        {
-            // Fetch the current number of books
-            FILE *fp1;
-
-            fp1 = fopen("book number.txt", "r");
-            fscanf(fp1, "%d", &Mylibrary.BookNum);
-            fclose(fp1);
-
-            FILE *fp2;
-
-            fp2 = fopen("BooksData.txt", "rb");
-            fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
-            fclose(fp2);
-
-            printf("There are total %d Books in the library\n", Mylibrary.BookNum);
-            printf("Here is a list of currently available books\n");
-            printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
-            for (int i = 0; i < Mylibrary.BookNum; i++)
-                printf("%d\t\t%s\t\t\t%s\t\t\t%d\n", Mylibrary.books[i].bookID, Mylibrary.books[i].bookName, Mylibrary.books[i].bookAuthor, Mylibrary.books[i].bookCopy);
-            getch();
-        }
-        break;
+            DisplayBook();
+            break;
 
         case 3:
-            ReturnBook();
+            DisplayBorrowedBook(index);
             break;
 
         case 4:
+            ReturnBook(index);
+            break;
+
+        case 5:
         {
             SaveStudentData();
-            exit(0);
+            SaveBookData();
+            return;
         }
 
         break;
@@ -188,13 +188,134 @@ void StudentOperations()
     return;
 }
 
-void BorrowBook()
+void BorrowBook(int index)
 {
+    int ID, key;
+
+    printf("You have %d Borrowed books\n", MyStudent.Student[index].NoOfBookBorrowed);
+
+    // To check if the student can borrow book or not
+    if (MyStudent.Student[index].NoOfBookBorrowed >= 5)
+    {
+        printf("You can not borrow more than 5 books\n");
+        getch();
+        return;
+    }
+    else
+    {
+        DisplayBook();
+        printf("Enter the ID of the book you want to borrow\n");
+        scanf("%d", &ID);
+        getchar();
+
+        // For searching the book in the library
+        for (key = 0; key < Mylibrary.BookNum; key++)
+        {
+            if (ID == Mylibrary.books[key].bookID)
+            {
+                // To check if the book can be rented or not
+                if (Mylibrary.books[key].bookCopy > 0)
+                {
+                    Mylibrary.books[key].bookCopy -= 1;
+
+                    strcpy(MyStudent.Student[index].books[MyStudent.Student[index].NoOfBookBorrowed].bookAuthor, Mylibrary.books[key].bookAuthor);
+                    strcpy(MyStudent.Student[index].books[MyStudent.Student[index].NoOfBookBorrowed].bookName, Mylibrary.books[key].bookName);
+                    MyStudent.Student[index].books[MyStudent.Student[index].NoOfBookBorrowed].bookID = Mylibrary.books[key].bookID;
+                    MyStudent.Student[index].books[MyStudent.Student[index].NoOfBookBorrowed].bookCopy = 1;
+
+                    MyStudent.Student[index].NoOfBookBorrowed += 1;
+                    printf("Book Borrowed Successfully\n");
+                    getch();
+                    return;
+                }
+                else
+                {
+                    printf("Sorry, the Book you want to borrow is not available at the time\n");
+                    getch();
+                    return;
+                }
+            }
+        }
+        if (key == Mylibrary.BookNum)
+        {
+            printf("Invalid Book ID\n");
+            getch();
+            return;
+        }
+    }
+
     return;
 }
 
-void ReturnBook()
+void DisplayBook()
 {
+    printf("There are total %d Books in the library\n", Mylibrary.BookNum);
+    printf("Here is a list of currently available books\n");
+    printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
+    for (int i = 0; i < Mylibrary.BookNum; i++)
+        printf("%-15d %-25s %-25s %-15d\n", Mylibrary.books[i].bookID,
+               Mylibrary.books[i].bookName, Mylibrary.books[i].bookAuthor,
+               Mylibrary.books[i].bookCopy);
+
+    return;
+}
+
+void DisplayBorrowedBook(int index)
+{
+    printf("You have %d Borrowed books\n", MyStudent.Student[index].NoOfBookBorrowed);
+    printf("Here is the list of the books you have borrowed\n\n");
+
+    printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
+    for (int j = 0; j < MyStudent.Student[index].NoOfBookBorrowed; j++)
+        printf("%-15d %-25s %-25s %-15d\n", MyStudent.Student[index].books[j].bookID,
+               MyStudent.Student[index].books[j].bookName, MyStudent.Student[index].books[j].bookAuthor,
+               MyStudent.Student[index].books[j].bookCopy);
+
+    return;
+}
+
+void ReturnBook(int index)
+{
+
+    int ID, key;
+
+    printf("You have %d Borrowed books\n", MyStudent.Student[index].NoOfBookBorrowed);
+
+    if (MyStudent.Student[index].NoOfBookBorrowed == 0)
+    {
+        printf("You have no books to return\n");
+        getch();
+        return;
+    }
+    else if (MyStudent.Student[index].NoOfBookBorrowed > 0)
+    {
+        DisplayBorrowedBook(index);
+    }
+
+    printf("\nEnter the ID of the Book you want to return\n");
+    scanf("%d", &ID);
+    getchar();
+    for (key = 0; key < MyStudent.Student[index].NoOfBookBorrowed; key++)
+    {
+        if (MyStudent.Student[index].books[key].bookID == ID)
+        {
+
+            for (int i = key; i < MyStudent.Student[index].NoOfBookBorrowed; i++)
+                MyStudent.Student[index].books[i] = MyStudent.Student[index].books[i+1];
+
+            MyStudent.Student[index].NoOfBookBorrowed -= 1;
+            Mylibrary.books[ID - 1].bookCopy += 1;
+            printf("Book returned successfully\n");
+            return;
+        }
+    }
+    if (key == MyStudent.Student[index].NoOfBookBorrowed)
+    {
+        printf("You do not have a Book of this ID\n");
+        getch();
+        return;
+    }
+
     return;
 }
 

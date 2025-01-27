@@ -16,9 +16,10 @@ struct Student
     char StudentName[50];
     long long int StudentRollNo;
     char StudentCourse[50];
-    int StudentYear;
+    char StudentYear[10];
     int StudentID;
     struct Book books[5];  // Array of books for each student
+    int NoOfBookBorrowed;
 };
 
 // Define struct StudentUser

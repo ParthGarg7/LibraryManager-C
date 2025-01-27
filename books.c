@@ -57,7 +57,7 @@ void AddBook()
 
 void DisplayBooks()
 {
-    system("cls");
+
     printf("There are total %d Books in the library\n", Mylibrary.BookNum);
     printf("Here is a list of currently available books\n");
     printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
@@ -91,12 +91,6 @@ void DeleteBook()
     if (ID > Mylibrary.BookNum)
     {
         printf("Wrong ID\n");
-        return;
-    }
-    else if (ID == Mylibrary.BookNum)
-    {
-        Mylibrary.BookNum -= 1;
-        printf("Book Deleted successfully! \nTotal Books: %d\n", Mylibrary.BookNum);
         return;
     }
     else

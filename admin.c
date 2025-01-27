@@ -7,6 +7,7 @@
 
 void Adminlogin();
 void AdminOperations();
+void DisplayStudents();
 
 long long int LoginID = 7983655087;
 char LoginPass[] = "7983655087";
@@ -36,11 +37,9 @@ void Adminlogin()
     return;
 }
 
-// no of book issued
-// no of book remaining
 void AdminOperations()
 {
-    LoadBookData();
+
     int choice;
 
     while (1)
@@ -68,37 +67,13 @@ void AdminOperations()
             break;
 
         case 4:
-        {
-
-            // Fetch the current number of Students
-            FILE *fp1;
-
-            fp1 = fopen("Student number.txt", "r");
-            fscanf(fp1, "%d", &MyStudent.StudentNum);
-            fclose(fp1);
-
-            FILE *fp2;
-
-            fp2 = fopen("StudentsData.txt", "rb");
-            fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
-            fclose(fp2);
-
-            printf("There are total %d Students\n", MyStudent.StudentNum);
-            printf("Here is a list of current Students\n");
-
-            printf("StudentID\tStudent Name\t\tStudent Course\t\tStudent year\tStudent Roll Number\n");
-            for (int i = 0; i < MyStudent.StudentNum; i++)
-                printf("%d\t%s\t\t%s\t\t%d\t%d", MyStudent.Student[i].StudentID, MyStudent.Student[i].StudentName, MyStudent.Student[i].StudentCourse, MyStudent.Student[i].StudentYear, MyStudent.Student[i].StudentRollNo);
-        }
-        break;
+            DisplayStudents();
+            break;
 
         case 5:
-        {
-            SaveBookData();
-            exit(0);
-        }
 
-        break;
+            SaveBookData();
+            return;
 
         default:
             printf("Invalid choice\n");
@@ -109,4 +84,32 @@ void AdminOperations()
     return;
 }
 
-// new or old student alag alag login karwana h
+void DisplayStudents()
+{
+    printf("There are total %d Students\n", MyStudent.StudentNum);
+    printf("Here is a list of Current Students\n\n\n");
+
+    for (int i = 0; i < MyStudent.StudentNum; i++)
+    {
+        printf("StudentID\tStudent Name\t\tStudent Course\t\tStudent year\tStudent Roll Number\n");
+        printf("%-15d %-25s %-25s %-15s %-20lld\n", MyStudent.Student[i].StudentID,
+               MyStudent.Student[i].StudentName, MyStudent.Student[i].StudentCourse,
+               MyStudent.Student[i].StudentYear, MyStudent.Student[i].StudentRollNo);
+
+        printf("\n\n%s have borrowed %d books\n\n", MyStudent.Student[i].StudentName, MyStudent.Student[i].NoOfBookBorrowed);
+        if (MyStudent.Student[i].NoOfBookBorrowed > 0)
+        {
+            printf("Here is the list of the books %s have borrowed\n\n", MyStudent.Student[i].StudentName);
+
+            printf("Book ID\t\tBook Name\t\tBook Author\t\tBook Copies\n");
+            for (int j = 0; j < MyStudent.Student[i].NoOfBookBorrowed; j++)
+                printf("%-15d %-25s %-25s %-15d\n", MyStudent.Student[i].books[j].bookID,
+                       MyStudent.Student[i].books[j].bookName, MyStudent.Student[i].books[j].bookAuthor,
+                       MyStudent.Student[i].books[j].bookCopy);
+        }
+
+        printf("----------------------------------------------------------------------------------------------------------------------------------------------\n\n");
+    }
+
+    return;
+}

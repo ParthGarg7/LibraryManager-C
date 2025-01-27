@@ -6,15 +6,19 @@
 #include "student.c"
 
 
+void Developer();
+
 int main()
 {
-    int logincount = 0;
+    LoadStudentData();
+    LoadBookData();
+
     char User[10];
 
-    while (logincount < 3)
+    while (1)
     {
         printf("Welcome to the library\n");
-        printf("ADMIN OR STUDENT\n");
+        printf("ADMIN OR STUDENT OR DEVELOPER\n");
 
         fgets(User, sizeof(User), stdin);
         User[strcspn(User, "\n")] = 0; // Remove newline character
@@ -22,31 +26,48 @@ int main()
         if (strcmp(User, "ADMIN") == 0 || strcmp(User, "admin") == 0)
         {
             printf("Welcome Admin\n");
+            Adminlogin();
             break;
         }
         else if (strcmp(User, "STUDENT") == 0 || strcmp(User, "student") == 0)
         {
             printf("Welcome Student\n");
+            StudentLogin();
             break;
+        }
+        else if (strcmp(User, "D") == 0 || strcmp(User, "d") == 0)
+        {
+            Developer();
         }
         else
         {
             printf("Wrong input\n");
         }
 
-        logincount += 1; // Increment after checking input
-        printf("%d login left\n", 3 - logincount);
-    }
-
-
-    if (strcmp(User, "ADMIN") == 0 || strcmp(User, "admin") == 0)
-    {
-        Adminlogin();
-    }
-    else if (strcmp(User, "STUDENT") == 0 || strcmp(User, "student") == 0)
-    {
-        StudentLogin();
     }
 
     return 0;
+}
+
+void Developer()
+{
+    int key;
+    printf("Welcome Developer\n");
+
+    printf("Press 1 for admin operation\nPress 2 for student operations\nPress 3 for exit\n");
+    scanf("%d", &key);
+    getchar();
+    if (key == 1)
+    {
+        AdminOperations();
+    }
+    else if (key == 2)
+    {
+        StudentLogin();
+    }
+    else
+    {
+        exit(0);
+    }
+    return;
 }
