@@ -3,7 +3,9 @@
 #include <conio.h>
 #include <stdlib.h>
 #include "books.c"
+#include "lib.h"
 
+void Adminlogin();
 void AdminOperations();
 
 long long int LoginID = 7983655087;
@@ -34,9 +36,6 @@ void Adminlogin()
     return;
 }
 
-// add book
-// del book
-// search book
 // no of book issued
 // no of book remaining
 void AdminOperations()
@@ -48,9 +47,10 @@ void AdminOperations()
     {
         printf("Admin Operations\n");
         printf("Press 1 for Adding Book\n");
-        printf("press 2 for Display Books\n");
+        printf("press 2 for Displaying Books\n");
         printf("Press 3 for Deleting Book\n");
-        printf("Press 4 for Exit\n");
+        printf("Press 4 for Displaying Students\n");
+        printf("Press 5 for Exit\n");
         scanf("%d", &choice);
         getchar();
         switch (choice)
@@ -68,6 +68,31 @@ void AdminOperations()
             break;
 
         case 4:
+        {
+
+            // Fetch the current number of Students
+            FILE *fp1;
+
+            fp1 = fopen("Student number.txt", "r");
+            fscanf(fp1, "%d", &MyStudent.StudentNum);
+            fclose(fp1);
+
+            FILE *fp2;
+
+            fp2 = fopen("StudentsData.txt", "rb");
+            fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
+            fclose(fp2);
+
+            printf("There are total %d Students\n", MyStudent.StudentNum);
+            printf("Here is a list of current Students\n");
+
+            printf("StudentID\tStudent Name\t\tStudent Course\t\tStudent year\tStudent Roll Number\n");
+            for (int i = 0; i < MyStudent.StudentNum; i++)
+                printf("%d\t%s\t\t%s\t\t%d\t%d", MyStudent.Student[i].StudentID, MyStudent.Student[i].StudentName, MyStudent.Student[i].StudentCourse, MyStudent.Student[i].StudentYear, MyStudent.Student[i].StudentRollNo);
+        }
+        break;
+
+        case 5:
         {
             SaveBookData();
             exit(0);

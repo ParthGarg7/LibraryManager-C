@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "admin.c"
+#include "student.c"
+
 
 int main()
 {
@@ -36,9 +38,14 @@ int main()
         printf("%d login left\n", 3 - logincount);
     }
 
+
     if (strcmp(User, "ADMIN") == 0 || strcmp(User, "admin") == 0)
     {
         Adminlogin();
+    }
+    else if (strcmp(User, "STUDENT") == 0 || strcmp(User, "student") == 0)
+    {
+        StudentLogin();
     }
 
     return 0;

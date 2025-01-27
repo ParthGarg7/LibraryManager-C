@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <direct.h>
+#include <stdlib.h>
+#include "lib.h"
 
 void LoadBookData();
 void AddBook();
@@ -8,19 +10,7 @@ void DisplayBooks();
 void DeleteBook();
 void SaveBookData();
 
-struct Book
-{
-    int bookID;
-    char bookName[50];
-    int bookCopy;
-    char bookAuthor[50];
-};
-
-struct library
-{
-    struct Book books[100]; // admin can add upto 100 books data
-    int BookNum;
-} Mylibrary;
+struct library Mylibrary;
 
 void LoadBookData()
 {
