@@ -88,11 +88,11 @@ int main()
         else if (strcmp(User, "STUDENT") == 0 || strcmp(User, "student") == 0)
         {
             printf("Welcome Student\n");
+            StudentLogin();
             break;
         }
         else
         {
-            StudentLogin();
             printf("Wrong input\n");
         }
 
