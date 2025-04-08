@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#include "lib.h"
+#include "../include/lib.h"
 
 // Define the actual global instances
 struct StudentUser MyStudent;
@@ -22,15 +22,38 @@ void LoadStudentData()
     // Fetch the current number of Students
     FILE *fp1;
 
-    fp1 = fopen("Student number.txt", "r");
+    fp1 = fopen("data/studentNumber.txt", "r");
+    if (fp1 == NULL)
+    {
+        // File doesn't exist — first run!
+       // printf("File not found. Creating new file and initializing student number to 0...\n");
+
+        // Set initial book number to 0
+        MyStudent.StudentNum = 0;
+
+        // Create the file and write 0 to it
+        fp1 = fopen("data/studentNumber .txt", "w");
+        if (fp1 != NULL)
+        {
+            fprintf(fp1, "%d", MyStudent.StudentNum);
+            fclose(fp1);
+        }
+        else
+        {
+            printf("Failed to create file!\n");
+        }
+    }
     fscanf(fp1, "%d", &MyStudent.StudentNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("StudentsData.txt", "rb");
-    fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
-    fclose(fp2);
+    fp2 = fopen("data/studentsData.txt", "rb");
+    if (fp2 != NULL)
+    {
+        fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
+        fclose(fp2);
+    }
 
     return;
 }
@@ -301,7 +324,7 @@ void ReturnBook(int index)
         {
 
             for (int i = key; i < MyStudent.Student[index].NoOfBookBorrowed; i++)
-                MyStudent.Student[index].books[i] = MyStudent.Student[index].books[i+1];
+                MyStudent.Student[index].books[i] = MyStudent.Student[index].books[i + 1];
 
             MyStudent.Student[index].NoOfBookBorrowed -= 1;
             Mylibrary.books[ID - 1].bookCopy += 1;
@@ -324,13 +347,13 @@ void SaveStudentData()
     // Save the updated Student count to the file
     FILE *fp1;
 
-    fp1 = fopen("Student number.txt", "w");
+    fp1 = fopen("data/studentNumber.txt", "w");
     fprintf(fp1, "%d", MyStudent.StudentNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("StudentsData.txt", "wb");
+    fp2 = fopen("data/studentsData.txt", "wb");
     fwrite(&MyStudent, sizeof(struct StudentUser), 1, fp2);
     fclose(fp2);
 

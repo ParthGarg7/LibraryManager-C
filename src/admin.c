@@ -3,7 +3,8 @@
 #include <conio.h>
 #include <stdlib.h>
 #include "books.c"
-#include "lib.h"
+#include "../include/lib.h"
+
 
 void Adminlogin();
 void AdminOperations();

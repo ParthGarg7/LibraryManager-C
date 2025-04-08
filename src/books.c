@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <direct.h>
 #include <stdlib.h>
-#include "lib.h"
+#include "../include/lib.h"
 
 void LoadBookData();
 void AddBook();
@@ -14,18 +14,48 @@ struct library Mylibrary;
 
 void LoadBookData()
 {
+
     // Fetch the current number of books
     FILE *fp1;
 
-    fp1 = fopen("book number.txt", "r");
-    fscanf(fp1, "%d", &Mylibrary.BookNum);
-    fclose(fp1);
+    // Try to open the file for reading
+    fp1 = fopen("data/bookNumber.txt", "r");
+
+    if (fp1 == NULL)
+    {
+        // File doesn't exist — first run!
+        //printf("File not found. Creating new file and initializing book number to 0...\n");
+
+        // Set initial book number to 0
+        Mylibrary.BookNum = 0;
+
+        // Create the file and write 0 to it
+        fp1 = fopen("data/bookNumber.txt", "w");
+        if (fp1 != NULL)
+        {
+            fprintf(fp1, "%d", Mylibrary.BookNum);
+            fclose(fp1);
+        }
+        else
+        {
+            printf("Failed to create file!\n");
+        }
+    }
+    else
+    {
+        // File exists, read the current book number
+        fscanf(fp1, "%d", &Mylibrary.BookNum);
+        fclose(fp1);
+    }
 
     FILE *fp2;
 
-    fp2 = fopen("BooksData.txt", "rb");
-    fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
-    fclose(fp2);
+    fp2 = fopen("data/booksData.txt", "rb");
+    if (fp2 != NULL)
+    {
+        fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
+        fclose(fp2);
+    }
 
     return;
 }
@@ -112,13 +142,13 @@ void SaveBookData()
     // Save the updated book count to the file
     FILE *fp1;
 
-    fp1 = fopen("book number.txt", "w");
+    fp1 = fopen("data/bookNumber.txt", "w");
     fprintf(fp1, "%d", Mylibrary.BookNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("BooksData.txt", "wb");
+    fp2 = fopen("data/booksData.txt", "wb");
     fwrite(&Mylibrary, sizeof(struct library), 1, fp2);
     fclose(fp2);
 

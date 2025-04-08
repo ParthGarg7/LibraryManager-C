@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-long long int LoginID = 7983655087;
-char LoginPass[] = "7983655087";
+long long int LoginID = 12345;
+char LoginPass[] = "adminPass";
 long long int AdminID;
 char AdminPass[50];
 
@@ -262,15 +262,44 @@ void LoadBookData()
     // Fetch the current number of books
     FILE *fp1;
 
-    fp1 = fopen("book number2.txt", "r");
-    fscanf(fp1, "%d", &Mylibrary.BookNum);
-    fclose(fp1);
+    // Try to open the file for reading
+    fp1 = fopen("bookNumber.txt", "r");
+
+    if (fp1 == NULL)
+    {
+        // File doesn't exist — first run!
+        //printf("File not found. Creating new file and initializing book number to 0...\n");
+
+        // Set initial book number to 0
+        Mylibrary.BookNum = 0;
+
+        // Create the file and write 0 to it
+        fp1 = fopen("bookNumber.txt", "w");
+        if (fp1 != NULL)
+        {
+            fprintf(fp1, "%d", Mylibrary.BookNum);
+            fclose(fp1);
+        }
+        else
+        {
+            printf("Failed to create file!\n");
+        }
+    }
+    else
+    {
+        // File exists, read the current book number
+        fscanf(fp1, "%d", &Mylibrary.BookNum);
+        fclose(fp1);
+    }
 
     FILE *fp2;
 
-    fp2 = fopen("BooksData2.txt", "rb");
-    fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
-    fclose(fp2);
+    fp2 = fopen("booksData.txt", "rb");
+    if (fp2 != NULL)
+    {
+        fread(&Mylibrary, sizeof(struct library), 1, fp2); // Read the struct from the file
+        fclose(fp2);
+    }
 
     return;
 }
@@ -357,13 +386,13 @@ void SaveBookData()
     // Save the updated book count to the file
     FILE *fp1;
 
-    fp1 = fopen("book number2.txt", "w");
+    fp1 = fopen("bookNumber.txt", "w");
     fprintf(fp1, "%d", Mylibrary.BookNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("BooksData2.txt", "wb");
+    fp2 = fopen("booksData.txt", "wb");
     fwrite(&Mylibrary, sizeof(struct library), 1, fp2);
     fclose(fp2);
 
@@ -375,15 +404,38 @@ void LoadStudentData()
     // Fetch the current number of Students
     FILE *fp1;
 
-    fp1 = fopen("Student number2.txt", "r");
+    fp1 = fopen("studentNumber.txt", "r");
+    if (fp1 == NULL)
+    {
+        // File doesn't exist — first run!
+        //printf("File not found. Creating new file and initializing student number to 0...\n");
+
+        // Set initial book number to 0
+        MyStudent.StudentNum = 0;
+
+        // Create the file and write 0 to it
+        fp1 = fopen("studentNumber .txt", "w");
+        if (fp1 != NULL)
+        {
+            fprintf(fp1, "%d", MyStudent.StudentNum);
+            fclose(fp1);
+        }
+        else
+        {
+            printf("Failed to create file!\n");
+        }
+    }
     fscanf(fp1, "%d", &MyStudent.StudentNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("StudentsData2.txt", "rb");
-    fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
-    fclose(fp2);
+    fp2 = fopen("studentsData.txt", "rb");
+    if (fp2 != NULL)
+    {
+        fread(&MyStudent, sizeof(struct StudentUser), 1, fp2); // Read the struct from the file
+        fclose(fp2);
+    }
 
     return;
 }
@@ -677,15 +729,17 @@ void SaveStudentData()
     // Save the updated Student count to the file
     FILE *fp1;
 
-    fp1 = fopen("Student number2.txt", "w");
+    fp1 = fopen("studentNumber.txt", "w");
     fprintf(fp1, "%d", MyStudent.StudentNum);
     fclose(fp1);
 
     FILE *fp2;
 
-    fp2 = fopen("StudentsData2.txt", "wb");
+    fp2 = fopen("studentsData.txt", "wb");
     fwrite(&MyStudent, sizeof(struct StudentUser), 1, fp2);
     fclose(fp2);
 
     return;
 }
+
+
